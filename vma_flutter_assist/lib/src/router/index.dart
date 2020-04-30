@@ -115,8 +115,8 @@ class Router extends StatefulWidget {
   }
 
   /// 获取路由参数
-  static T getArgsModel<T extends Model<T>>(
-          BuildContext context, Model<T> model) =>
+  static M getArgsModel<M extends Model>(
+          BuildContext context, Model<M> model) =>
       model.fromJson(getArgs(context));
 
   /// 获取[RouterState]
