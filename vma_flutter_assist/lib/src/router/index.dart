@@ -23,8 +23,8 @@ class RouterBeforeInterceptorResult {
 
 /// 前置拦截跟踪器，可用于注销拦截器
 class RouterBeforeInterceptorTracker implements Tracker {
-  Router _router;
-  RouterBeforeInterceptor _interceptor;
+  final Router _router;
+  final RouterBeforeInterceptor _interceptor;
 
   RouterBeforeInterceptorTracker(this._router, this._interceptor)
       : assert(_router != null && _interceptor != null);
@@ -34,6 +34,22 @@ class RouterBeforeInterceptorTracker implements Tracker {
     if (_router.beforeHandlers != null &&
         _router.beforeHandlers.contains(_interceptor)) {
       _router.beforeHandlers.remove(_interceptor);
+    }
+  }
+}
+
+/// 路由跟踪器，可用于注销路由
+class RouteTracker implements Tracker {
+  final Router _router;
+  final String _name;
+
+  RouteTracker(this._router, this._name)
+      : assert(_router != null && _name != null);
+
+  @override
+  void dispose() {
+    if (_router.routes != null && _router.routes.containsKey(_name)) {
+      _router.routes.remove(_name);
     }
   }
 }
@@ -131,6 +147,20 @@ class Router extends StatefulWidget {
   void removeBeforeInterceptor(RouterBeforeInterceptor interceptor) {
     if (beforeHandlers.contains(interceptor)) {
       beforeHandlers.remove(interceptor);
+    }
+  }
+
+  /// 添加路由
+  RouteTracker addRoute(String routeName, WidgetBuilder builder) {
+    assert(routes.containsKey(routeName), '路由名称已被使用，请勿重复定义');
+    routes[routeName] = builder;
+    return RouteTracker(this, routeName);
+  }
+
+  /// 移除路由
+  void removeRoute(String routeName) {
+    if (routes.containsKey(routeName)) {
+      routes.remove(routeName);
     }
   }
 
