@@ -179,20 +179,20 @@ class RouterState extends State<Router> {
   /// 同[NavigatorState.pushNamed]
   /// 入参必须继承自[Model]
   @optionalTypeArgs
-  Future<T> pushNamed<T extends Object, M extends Model<M>>(
+  Future<T> pushNamed<T extends Object, M extends Model>(
     String routeName, {
     Model<M> arguments,
   }) =>
       navigatorState.pushNamed(
         routeName,
-        arguments: arguments.toJson(),
+        arguments: arguments?.toJson(),
       );
 
   /// 同[NavigatorState.pushReplacementNamed]
   /// 入参必须继承自[Model]
   @optionalTypeArgs
   Future<T> pushReplacementNamed<T extends Object, TO extends Object,
-          M extends Model<M>>(
+          M extends Model>(
     String routeName, {
     TO result,
     Model<M> arguments,
@@ -200,14 +200,14 @@ class RouterState extends State<Router> {
       navigatorState.pushReplacementNamed(
         routeName,
         result: result,
-        arguments: arguments.toJson(),
+        arguments: arguments?.toJson(),
       );
 
   /// 同[NavigatorState.popAndPushNamed]
   /// 入参必须继承自[Model]
   @optionalTypeArgs
   Future<T>
-      popAndPushNamed<T extends Object, TO extends Object, M extends Model<M>>(
+      popAndPushNamed<T extends Object, TO extends Object, M extends Model>(
     String routeName, {
     TO result,
     Model<M> arguments,
@@ -215,13 +215,13 @@ class RouterState extends State<Router> {
           navigatorState.popAndPushNamed(
             routeName,
             result: result,
-            arguments: arguments.toJson(),
+            arguments: arguments?.toJson(),
           );
 
   /// 同[NavigatorState.pushNamedAndRemoveUntil]
   /// 入参必须继承自[Model]
   @optionalTypeArgs
-  Future<T> pushNamedAndRemoveUntil<T extends Object, M extends Model<M>>(
+  Future<T> pushNamedAndRemoveUntil<T extends Object, M extends Model>(
     String newRouteName,
     RoutePredicate predicate, {
     Model<M> arguments,
@@ -229,7 +229,7 @@ class RouterState extends State<Router> {
       navigatorState.pushNamedAndRemoveUntil(
         newRouteName,
         predicate,
-        arguments: arguments.toJson(),
+        arguments: arguments?.toJson(),
       );
 
   /// 前置拦截
