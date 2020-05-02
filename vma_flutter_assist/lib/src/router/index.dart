@@ -73,6 +73,7 @@ class Router extends StatefulWidget {
   /// 路由前置拦截处理器
   final List<RouterBeforeInterceptor> beforeHandlers;
 
+  /// 包装build元素
   final TransitionBuilder builder;
 
   Router({
@@ -98,7 +99,7 @@ class Router extends StatefulWidget {
     this.onUnknownRoute,
     this.observers = const [],
     this.beforeHandlers = const [],
-    this.builder,
+        this.builder,
   })  : assert(namespace != null),
         assert(routes != null),
         super(key: key) {
