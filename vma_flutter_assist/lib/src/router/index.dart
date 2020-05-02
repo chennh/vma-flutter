@@ -73,6 +73,8 @@ class Router extends StatefulWidget {
   /// 路由前置拦截处理器
   final List<RouterBeforeInterceptor> beforeHandlers;
 
+  final TransitionBuilder builder;
+
   Router({
     Key key,
     this.initialRoute,
@@ -80,6 +82,7 @@ class Router extends StatefulWidget {
     this.onUnknownRoute,
     this.observers = const [],
     this.beforeHandlers = const [],
+    this.builder,
   })  : assert(routes != null),
         super(key: key) {
     if (key != null) {
@@ -95,6 +98,7 @@ class Router extends StatefulWidget {
     this.onUnknownRoute,
     this.observers = const [],
     this.beforeHandlers = const [],
+    this.builder,
   })  : assert(namespace != null),
         assert(routes != null),
         super(key: key) {
@@ -254,7 +258,7 @@ class RouterState extends State<Router> {
 
   @override
   Widget build(BuildContext context) {
-    return Navigator(
+    Widget navigator = Navigator(
       key: _navigatorKey,
       initialRoute: widget.initialRoute,
       onUnknownRoute: widget.onUnknownRoute,
@@ -270,5 +274,8 @@ class RouterState extends State<Router> {
         return widget.onUnknownRoute(settings);
       },
     );
+    return widget.builder != null
+        ? widget.builder(context, navigator)
+        : navigator;
   }
 }
