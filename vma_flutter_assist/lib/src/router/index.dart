@@ -152,7 +152,7 @@ class Router extends StatefulWidget {
 
   /// 添加路由
   RouteTracker addRoute(String routeName, WidgetBuilder builder) {
-    assert(routes.containsKey(routeName), '路由名称已被使用，请勿重复定义');
+    assert(!routes.containsKey(routeName), '路由名称已被使用，请勿重复定义');
     routes[routeName] = builder;
     return RouteTracker(this, routeName);
   }
