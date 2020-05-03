@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'index.dart';
 
 class UIRouter extends Router {
-  static final List<UIRouter> uiRouterList = const [];
+  static final List<UIRouter> uiRouterList = [];
   final String _uiName;
 
   UIRouter.registry(String namespace, {
@@ -22,25 +22,27 @@ class UIRouter extends Router {
         onUnknownRoute: onUnknownRoute,
         observers: observers,
         beforeHandlers: beforeHandlers,
-        builder: (context, child) => Container(
-          child: Stack(
-            children: <Widget>[
-              child,
-              Positioned(
-                left: 20,
-                bottom: 50 * (uiRouterList.length + 1).toDouble(),
-                child: FloatingActionButton.extended(
-                  label: Text('UI $namespace'),
-                  onPressed: () {
-                    Router.getNSRouter(namespace)
-                        .routerState
-                        .pushReplacementNamed('UI_$namespace');
-                  },
-                ),
+        builder: (context, child) =>
+            Container(
+              child: Stack(
+                children: <Widget>[
+                  child,
+                  Positioned(
+                    left: 20,
+                    bottom: 50 * (uiRouterList.length + 1).toDouble(),
+                    child: FloatingActionButton.extended(
+                      label: Text('UI $namespace'),
+                      onPressed: () {
+                        Router
+                            .getNSRouter(namespace)
+                            .routerState
+                            .pushReplacementNamed('UI_$namespace');
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
       ) {
     final List<Widget> children = [];
     routes.forEach((name, builder) {
@@ -53,13 +55,14 @@ class UIRouter extends Router {
     });
     this.addRoute(
       _uiName,
-          (context) => Container(
-        child: GridView(
-          gridDelegate:
-          SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
-          children: children,
-        ),
-      ),
+          (context) =>
+          Container(
+            child: GridView(
+              gridDelegate:
+              SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
+              children: children,
+            ),
+          ),
     );
     uiRouterList.add(this);
   }
