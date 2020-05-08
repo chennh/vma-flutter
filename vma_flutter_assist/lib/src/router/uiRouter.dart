@@ -29,7 +29,7 @@ class UIRouter extends Router {
                   child,
                   Positioned(
                     left: 20,
-                    bottom: 50 * (uiRouterList.length + 1).toDouble(),
+                    bottom: 20 + 30 * (uiRouterList.length + 1).toDouble(),
                     child: FloatingActionButton.extended(
                       label: Text('UI $namespace'),
                       onPressed: () {
@@ -44,26 +44,71 @@ class UIRouter extends Router {
               ),
             ),
       ) {
+    Map<String, List<String>> group = _group(routes);
     final List<Widget> children = [];
-    routes.forEach((name, builder) {
-      children.add(RaisedButton(
-        child: Text(name),
-        onPressed: () {
-          routerState.pushNamed(name);
-        },
+    group.forEach((title, list) {
+      children.add(Container(
+        margin: const EdgeInsets.only(top: 20, bottom: 20),
+        child: Column(
+          children: <Widget>[
+            Center(
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+            Wrap(
+              children:
+              list.map((name) => _uiItem(name, routes[name])).toList(),
+            )
+          ],
+        ),
       ));
     });
     this.addRoute(
       _uiName,
           (context) =>
-          Container(
-            child: GridView(
-              gridDelegate:
-              SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
-              children: children,
-            ),
+          ListView(
+            children: children,
           ),
     );
     uiRouterList.add(this);
   }
+
+  /// UI分组
+  Map<String, List<String>> _group(Map<String, WidgetBuilder> routes) {
+    String unName = '未分组';
+    Map<String, List<String>> group = {unName: []};
+    Map<String, String> alongMap = {};
+    routes.forEach((name, builder) {
+      List<String> names = name.split('/');
+      if (names.length == 1) {
+        alongMap[names[0]] = name;
+      } else {
+        if (!group.containsKey(names[0])) {
+          group[names[0]] = [];
+        }
+        group[names[0]].add(name);
+      }
+    });
+    alongMap.forEach((name, widget) {
+      if (group.containsKey(name)) {
+        group[name].add(widget);
+      } else {
+        group[unName].add(widget);
+      }
+    });
+    return group;
+  }
+
+  Widget _uiItem(String name, WidgetBuilder builder) =>
+      RaisedButton(
+        child: Text(name),
+        onPressed: () {
+          routerState.pushNamed(name);
+        },
+      );
 }
