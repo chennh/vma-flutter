@@ -61,8 +61,12 @@ class UIRouter extends Router {
               ),
             ),
             Wrap(
-              children:
-              list.map((name) => _uiItem(name, routes[name])).toList(),
+              children: list
+                  .map((name) =>
+                  Container(
+                      margin: const EdgeInsets.only(right: 10),
+                      child: _uiItem(name, routes[name])))
+                  .toList(),
             )
           ],
         ),
@@ -71,8 +75,11 @@ class UIRouter extends Router {
     this.addRoute(
       _uiName,
           (context) =>
-          ListView(
-            children: children,
+          Scaffold(
+            backgroundColor: Colors.grey,
+            body: ListView(
+              children: children,
+            ),
           ),
     );
     uiRouterList.add(this);
