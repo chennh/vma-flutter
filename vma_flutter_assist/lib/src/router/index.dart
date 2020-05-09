@@ -55,7 +55,7 @@ class RouteTracker implements Tracker {
 }
 
 class Router extends StatefulWidget {
-  /// 所有已注册的路由映射，通过[Router.registry]注册，可通过[Router.namespace]或[Router.getRouter]读取
+  /// 所有已注册的路由映射，通过[Router.registry]注册，可通过[Router.namespace]或[Router.getNSRouter]读取
   static final Map<String, Router> _namespaceRouterMap = {};
 
   /// 对应[Navigator]的initialRoute
