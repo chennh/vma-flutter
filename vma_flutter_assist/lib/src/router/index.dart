@@ -4,17 +4,17 @@ import '../listener/listener.dart';
 import '../model/model.dart';
 
 /// 前置拦截器
-typedef RouterBeforeInterceptor = RouterBeforeInterceptorResult Function(
+typedef VRouterBeforeInterceptor = VRouterBeforeInterceptorResult Function(
   RouteSettings settings,
   WidgetBuilder builder,
-  Router router,
+    VRouter router,
 );
 
-class RouterBeforeInterceptorResult {
+class VRouterBeforeInterceptorResult {
   final bool result;
   final WidgetBuilder redirectTo;
 
-  RouterBeforeInterceptorResult(
+  VRouterBeforeInterceptorResult(
     /// true - 继续执行下一个拦截器，false - 返回redirectTo
     this.result, {
     this.redirectTo,
@@ -22,11 +22,11 @@ class RouterBeforeInterceptorResult {
 }
 
 /// 前置拦截跟踪器，可用于注销拦截器
-class RouterBeforeInterceptorTracker implements Tracker {
-  final Router _router;
-  final RouterBeforeInterceptor _interceptor;
+class VRouterBeforeInterceptorTracker implements Tracker {
+  final VRouter _router;
+  final VRouterBeforeInterceptor _interceptor;
 
-  RouterBeforeInterceptorTracker(this._router, this._interceptor)
+  VRouterBeforeInterceptorTracker(this._router, this._interceptor)
       : assert(_router != null && _interceptor != null);
 
   @override
@@ -39,11 +39,11 @@ class RouterBeforeInterceptorTracker implements Tracker {
 }
 
 /// 路由跟踪器，可用于注销路由
-class RouteTracker implements Tracker {
-  final Router _router;
+class VRouteTracker implements Tracker {
+  final VRouter _router;
   final String _name;
 
-  RouteTracker(this._router, this._name)
+  VRouteTracker(this._router, this._name)
       : assert(_router != null && _name != null);
 
   @override
@@ -54,9 +54,9 @@ class RouteTracker implements Tracker {
   }
 }
 
-class Router extends StatefulWidget {
-  /// 所有已注册的路由映射，通过[Router.registry]注册，可通过[Router.namespace]或[Router.getNSRouter]读取
-  static final Map<String, Router> _namespaceRouterMap = {};
+class VRouter extends StatefulWidget {
+  /// 所有已注册的路由映射，通过[VRouter.registry]注册，可通过[VRouter.namespace]或[VRouter.getRouter]读取
+  static final Map<String, VRouter> _namespaceRouterMap = {};
 
   /// 对应[Navigator]的initialRoute
   final String initialRoute;
@@ -71,27 +71,23 @@ class Router extends StatefulWidget {
   final List<NavigatorObserver> observers;
 
   /// 路由前置拦截处理器
-  final List<RouterBeforeInterceptor> beforeHandlers;
+  final List<VRouterBeforeInterceptor> beforeHandlers;
 
-  /// 包装build元素
-  final TransitionBuilder builder;
-
-  Router({
+  VRouter({
     Key key,
     this.initialRoute,
     @required this.routes,
     this.onUnknownRoute,
     this.observers = const [],
     this.beforeHandlers = const [],
-    this.builder,
   })  : assert(routes != null),
         super(key: key) {
     if (key != null) {
-      Router._namespaceRouterMap[key.toString()] = this;
+      VRouter._namespaceRouterMap[key.toString()] = this;
     }
   }
 
-  Router.registry(
+  VRouter.registry(
     String namespace, {
     Key key,
     this.initialRoute,
@@ -99,20 +95,19 @@ class Router extends StatefulWidget {
     this.onUnknownRoute,
     this.observers = const [],
     this.beforeHandlers = const [],
-        this.builder,
   })  : assert(namespace != null),
         assert(routes != null),
         super(key: key) {
-    assert(!Router._namespaceRouterMap.containsKey(namespace),
+    assert(!VRouter._namespaceRouterMap.containsKey(namespace),
         '命名空间[$namespace]已存在');
-    Router._namespaceRouterMap[namespace] = this;
+    VRouter._namespaceRouterMap[namespace] = this;
   }
 
   /// 获取命名空间map
-  static Map<String, Router> get namespace => _namespaceRouterMap;
+  static Map<String, VRouter> get namespace => _namespaceRouterMap;
 
   /// 根据命名空间获取特定的路由对象
-  static Router getNSRouter(String namespace) => _namespaceRouterMap[namespace];
+  static VRouter getNSRouter(String namespace) => _namespaceRouterMap[namespace];
 
   /// 获取路由参数
   static Object getArgs(BuildContext context) {
@@ -124,13 +119,13 @@ class Router extends StatefulWidget {
           BuildContext context, Model<M> model) =>
       model.fromJson(getArgs(context));
 
-  /// 获取[RouterState]
-  static RouterState of(BuildContext context) =>
-      context.findAncestorStateOfType<RouterState>();
+  /// 获取[VRouterState]
+  static VRouterState of(BuildContext context) =>
+      context.findAncestorStateOfType<VRouterState>();
 
-  /// 获取widget对应的[RouterState]
+  /// 获取widget对应的[VRouterState]
   /// 使用该方法要求必须在构造函数中定义key
-  RouterState get routerState {
+  VRouterState get routerState {
     if (key == null) {
       throw Exception('必须在构造函数中指定key');
     }
@@ -142,24 +137,24 @@ class Router extends StatefulWidget {
   NavigatorState get navigatorState => routerState.navigatorState;
 
   /// 添加前置拦截器
-  RouterBeforeInterceptorTracker addBeforeInterceptor(
-      RouterBeforeInterceptor interceptor) {
+  VRouterBeforeInterceptorTracker addBeforeInterceptor(
+      VRouterBeforeInterceptor interceptor) {
     beforeHandlers.add(interceptor);
-    return RouterBeforeInterceptorTracker(this, interceptor);
+    return VRouterBeforeInterceptorTracker(this, interceptor);
   }
 
   /// 移除前置拦截器
-  void removeBeforeInterceptor(RouterBeforeInterceptor interceptor) {
+  void removeBeforeInterceptor(VRouterBeforeInterceptor interceptor) {
     if (beforeHandlers.contains(interceptor)) {
       beforeHandlers.remove(interceptor);
     }
   }
 
   /// 添加路由
-  RouteTracker addRoute(String routeName, WidgetBuilder builder) {
-    assert(!routes.containsKey(routeName), '路由名称已被使用，请勿重复定义');
+  VRouteTracker addRoute(String routeName, WidgetBuilder builder) {
+    assert(routes.containsKey(routeName), '路由名称已被使用，请勿重复定义');
     routes[routeName] = builder;
-    return RouteTracker(this, routeName);
+    return VRouteTracker(this, routeName);
   }
 
   /// 移除路由
@@ -170,10 +165,10 @@ class Router extends StatefulWidget {
   }
 
   @override
-  RouterState createState() => RouterState();
+  VRouterState createState() => VRouterState();
 }
 
-class RouterState extends State<Router> {
+class VRouterState extends State<VRouter> {
   GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
   /// 获取[NavigatorState]
@@ -243,11 +238,11 @@ class RouterState extends State<Router> {
   WidgetBuilder _beforeRouter(
     RouteSettings settings,
     WidgetBuilder builder,
-    Router router,
+    VRouter router,
   ) {
     if (widget.beforeHandlers != null && widget.beforeHandlers.length > 0) {
-      for (RouterBeforeInterceptor before in widget.beforeHandlers) {
-        RouterBeforeInterceptorResult result =
+      for (VRouterBeforeInterceptor before in widget.beforeHandlers) {
+        VRouterBeforeInterceptorResult result =
             before(settings, builder, widget);
         if (result.result != true) {
           return result.redirectTo;
@@ -259,7 +254,7 @@ class RouterState extends State<Router> {
 
   @override
   Widget build(BuildContext context) {
-    Widget navigator = Navigator(
+    return Navigator(
       key: _navigatorKey,
       initialRoute: widget.initialRoute,
       onUnknownRoute: widget.onUnknownRoute,
@@ -275,8 +270,5 @@ class RouterState extends State<Router> {
         return widget.onUnknownRoute(settings);
       },
     );
-    return widget.builder != null
-        ? widget.builder(context, navigator)
-        : navigator;
   }
 }
