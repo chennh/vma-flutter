@@ -2,6 +2,8 @@ import 'package:encrypt/encrypt.dart';
 import 'package:pointycastle/asymmetric/api.dart';
 
 class RSAWrap {
+  RSAWrap._();
+
   ///
   /// 根据模和指数生成publicKey
   ///

@@ -7,14 +7,15 @@ class AuthorizationSDKService {
   static String hmac(
     String uri,
     String method,
+    // 含端口不含协议，如: 127.0.0.1:8080
     String host,
     String macKey,
   ) {
     AuthorizationRequest request = new AuthorizationRequest(
-      uri: uri,
-      method: method,
-      host: host,
-      nonce: Nonce.makeNonce(),
+      uri,
+      method,
+      host,
+      Nonce.makeNonce(),
     );
     StringBuffer sb = StringBuffer();
     sb.write("MAC ");
@@ -32,9 +33,9 @@ class AuthorizationSDKService {
   ) {
     Uri uri = Uri.parse(url);
     return hmac(
-        uri.path + (StringWrap.isBlank(uri.query) ? '' : '?' + uri.query),
+        uri.path + (_StringWrap.isBlank(uri.query) ? '' : '?${uri.query}'),
         method,
-        uri.host,
+        uri.host + (uri.hasPort ? ':${uri.port.toString()}' : ''),
         macKey);
   }
 
@@ -45,10 +46,10 @@ class AuthorizationSDKService {
     String macKey,
   ) {
     AuthorizationEntity entity = AuthorizationEntity(
-      authorization: hmacUrl(uri, method, macKey),
-      authorizationHost: host,
-      authorizationMethod: method,
-      authorizationUri: uri,
+      hmacUrl(uri, method, macKey),
+      host,
+      method,
+      uri,
     );
     return entity;
   }
@@ -60,14 +61,14 @@ class AuthorizationSDKService {
   ) {
     Uri uri = Uri.parse(url);
     return getAuthorization(
-        uri.path + (StringWrap.isBlank(uri.query) ? '' : '?' + uri.query),
+        uri.path + (_StringWrap.isBlank(uri.query) ? '' : '?' + uri.query),
         method,
         uri.host,
         macKey);
   }
 
   static String generalMac(AuthorizationRequest request, String macKey) {
-    return StringWrap.encryptHMac256(
+    return _StringWrap.encryptHMac256(
         request.nonce.toString() +
             AuthorizationConstant.STR_SYMBOL +
             request.method +
@@ -94,36 +95,33 @@ class AuthorizationEntity {
   String authorizationMethod;
   String authorizationHost;
 
-  AuthorizationEntity({
-    String authorization,
-    String authorizationUri,
-    String authorizationMethod,
-    String authorizationHost,
-  })  : this.authorization = authorization,
-        this.authorizationHost = authorizationHost,
-        this.authorizationMethod = authorizationMethod,
-        this.authorizationUri = authorizationUri;
+  AuthorizationEntity(
+    this.authorization,
+    this.authorizationUri,
+    this.authorizationMethod,
+    this.authorizationHost,
+  );
 
   String getEncodeAuthorization() {
-    return StringWrap.isBlank(authorization)
+    return _StringWrap.isBlank(authorization)
         ? ""
         : base64.encode(authorization.codeUnits);
   }
 
   String getEncodeAuthorizationUri() {
-    return StringWrap.isBlank(authorizationUri)
+    return _StringWrap.isBlank(authorizationUri)
         ? ""
         : base64.encode(authorizationUri.codeUnits);
   }
 
   String getEncodeAuthorizationMethod() {
-    return StringWrap.isBlank(authorizationMethod)
+    return _StringWrap.isBlank(authorizationMethod)
         ? ""
         : base64.encode(authorizationMethod.codeUnits);
   }
 
   String getEncodeAuthorizationHost() {
-    return StringWrap.isBlank(authorizationHost)
+    return _StringWrap.isBlank(authorizationHost)
         ? ""
         : base64.encode(authorizationHost.codeUnits);
   }
@@ -152,14 +150,10 @@ class Nonce {
   int timestamp;
   String nonce;
 
-  Nonce({num timestamp, String nonce})
-      : this.timestamp = timestamp,
-        this.nonce = nonce;
-
+  Nonce(this.timestamp, this.nonce);
   static Nonce makeNonce() {
     Nonce nonceInstance = new Nonce(
-        timestamp: DateTime.now().microsecondsSinceEpoch,
-        nonce: StringWrap.general(8));
+        DateTime.now().millisecondsSinceEpoch, _StringWrap.general(8));
     return nonceInstance;
   }
 
@@ -175,27 +169,27 @@ class AuthorizationRequest {
   String host;
   Nonce nonce;
 
-  AuthorizationRequest({
-    String uri,
-    String method,
-    String host,
-    Nonce nonce,
-  }) : this.nonce = nonce {
+  AuthorizationRequest(
+    this.uri,
+    this.method,
+    this.host,
+    this.nonce,
+  ) {
     setUri(uri);
     setMethod(method);
     setHost(host);
   }
 
   setUri(String uri) {
-    if (!StringWrap.isBlank(uri)) {
-      this.uri = StringWrap.translateUri(uri);
+    if (!_StringWrap.isBlank(uri)) {
+      this.uri = _StringWrap.translateUri(uri);
     } else {
       this.uri = "";
     }
   }
 
   setMethod(String method) {
-    if (!StringWrap.isBlank(method)) {
+    if (!_StringWrap.isBlank(method)) {
       this.method = method.toUpperCase();
     } else {
       this.method = "";
@@ -203,7 +197,7 @@ class AuthorizationRequest {
   }
 
   setHost(String host) {
-    if (!StringWrap.isBlank(host) && host.endsWith(":80")) {
+    if (!_StringWrap.isBlank(host) && host.endsWith(":80")) {
       this.host = host.replaceAll(":80", "");
     } else {
       this.host = host;
@@ -211,7 +205,7 @@ class AuthorizationRequest {
   }
 }
 
-class StringWrap {
+class _StringWrap {
   static String general(int length) {
     String alphabet = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
     StringBuffer sb = StringBuffer();
@@ -222,11 +216,11 @@ class StringWrap {
   }
 
   static bool isBlank(String str) {
-    return str == null || str.isNotEmpty;
+    return str.isEmpty;
   }
 
   static String translateUri(String uri) {
-    if (!StringWrap.isBlank(uri)) {
+    if (!_StringWrap.isBlank(uri)) {
       List<String> uris = uri.split("\\?");
       if (uris.length > 1) {
         StringBuffer sb = StringBuffer();
