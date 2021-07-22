@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import '../http/Model.dart';
 
 class HttpWrap {
   HttpWrap._();
@@ -27,8 +28,8 @@ class HttpWrap {
   }
 
   /// 替换data并生成新的[Response]
-  static Response<T> dataResponse<T>(Response source, T? data) {
-    return Response<T>(
+  static dataResponse<T>(Response source, T? data) {
+    return Response(
       data: data,
       headers: source.headers,
       requestOptions: source.requestOptions,
@@ -46,7 +47,7 @@ class HttpWrap {
     if (response.data == null) {
       return response;
     }
-    return dataResponse<dynamic>(response, fromResponseData(response.data, fromJson));
+    return dataResponse<T>(response, fromResponseData(response.data, fromJson));
   }
 
   /// response.data转为bean对象
@@ -58,6 +59,14 @@ class HttpWrap {
       return fromJson(data as Map<String, dynamic>);
     }
     return data;
+  }
+
+  /// 入参处理
+  static transformParams<T>(T params) {
+    if (params is Model) {
+      return params.toJson();
+    }
+    return params;
   }
 
 }

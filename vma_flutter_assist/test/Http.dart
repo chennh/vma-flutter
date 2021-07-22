@@ -9,13 +9,13 @@ void main() async {
   Map<String, String> map = {'token': ''};
   Http.init(HttpConfig(
       options: BaseOptions(
-          baseUrl: 'http://localhost:51002',
+          baseUrl: 'http://39.100.61.208:51002',
           receiveTimeout: 10000,
           connectTimeout: 10000),
       interceptors: [
         JsonStrategyInterceptor(),
         AuthorizationInterceptor(
-            AuthorizationConfig((options) => map['token'] ?? '', debug: false))
+            AuthorizationConfig((options) => map['token'] ?? '', debug: true))
       ]));
 
   String account = 'xmls10010';
@@ -25,13 +25,15 @@ void main() async {
   EncryptionResp encryptionResp =
       (await AccountApi.getEncryption()).data as EncryptionResp;
   String encryptPassword = RSAWrap.encrypt(
-      password, encryptionResp.modulus, encryptionResp.exponent);
+      password, encryptionResp.modulus as String, encryptionResp.exponent as String);
 
   print('login');
   AccountLoginResp loginResp = (await AccountApi.login(AccountLoginReq(
-          account, encryptPassword, encryptionResp.randomIndex)))
+          account: account,
+          password: encryptPassword,
+          randomIndex: encryptionResp.randomIndex)))
       .data as AccountLoginResp;
-  map['token'] = loginResp.macKey;
+  map['token'] = loginResp.macKey as String;
 
   print('getCurrent: ' + (map['token'] as String));
   AccountLoginResp loginResp2 =

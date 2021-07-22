@@ -30,9 +30,12 @@ class Http {
       HttpWrap.mergeOptions(source, target);
 
   /// 转换Response
-  static Response<T> transformResponse<T>(
+  static transformResponse<T>(
           Response response, T fromJson(Map<String, dynamic> data)) =>
-      HttpWrap.transformResponse(response, fromJson);
+      HttpWrap.transformResponse<T>(response, fromJson);
+
+  /// 入参处理
+  static transformParams<T> (T params) => HttpWrap.transformParams(params);
 
   /// Handy method to make http GET request, which is a alias of  [Http.request(RequestOptions)].
   static Future<Response<T>> get<T>(
