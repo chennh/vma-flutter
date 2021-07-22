@@ -1,12 +1,52 @@
 import 'package:dio/dio.dart';
 import 'package:vma_flutter_assist/vma_flutter_assist.dart';
-
-import 'definitions/AccountLoginReq.dart';
-import 'definitions/AccountLoginResp.dart';
-import 'definitions/EncryptionResp.dart';
+import './definitions/AccountLoginResp.dart';
+import './definitions/EncryptionResp.dart';
+import './definitions/AccountLoginReq.dart';
 
 class AccountApi {
   AccountApi._();
+
+  ///
+  /// 获取当前登录用户
+  ///
+  /// @return { Future<Response<AccountLoginResp>> }
+  ///
+  static Future<Response<AccountLoginResp>> getCurrent({
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) {
+    return Http.get('/common/v1.0/account/current',
+            options: options,
+            cancelToken: cancelToken,
+            onSendProgress: onSendProgress,
+            onReceiveProgress: onReceiveProgress)
+        .then((response) => Http.transformResponse(
+            response, (model) => AccountLoginResp.fromJson(model)));
+  }
+
+  ///
+  /// 获取加密串
+  ///
+  /// @return { Future<Response<EncryptionResp>> }
+  ///
+  static Future<Response<EncryptionResp>> getEncryption({
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) {
+    return Http.get('/common/v1.0/account/encryption',
+            options: options,
+            cancelToken: cancelToken,
+            onSendProgress: onSendProgress,
+            onReceiveProgress: onReceiveProgress)
+        .then((response) => Http.transformResponse(
+            response, (model) => EncryptionResp.fromJson(model)));
+    ;
+  }
 
   ///
   /// 登录
@@ -20,36 +60,41 @@ class AccountApi {
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
-  }) =>
-      Http.post(
-        '/common/v1.0/account/login',
-        data: params.toJson(),
-        options: options,
-        cancelToken: cancelToken,
-        onSendProgress: onSendProgress,
-        onReceiveProgress: onReceiveProgress,
-      ).then((response) => Http.transformResponse(
-          response, (model) => AccountLoginResp.fromJson(model)));
+  }) {
+    return Http.post('/common/v1.0/account/login',
+            data: params,
+            options: options,
+            cancelToken: cancelToken,
+            onSendProgress: onSendProgress,
+            onReceiveProgress: onReceiveProgress)
+        .then((response) => Http.transformResponse(
+            response, (model) => AccountLoginResp.fromJson(model)));
+    ;
+  }
 
   ///
-  /// 获取加密串
+  /// 登录测试
   ///
-  /// @return { Future<Response<EncryptionResp>> }
+  /// @param { AccountLoginReq } params
+  /// @return { Future<Response<AccountLoginResp>> }
   ///
-  static Future<Response<EncryptionResp>> getEncryption({
+  static Future<Response<AccountLoginResp>> loginTest(
+    AccountLoginReq params, {
     Options? options,
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
-  }) =>
-      Http.get(
-        '/common/v1.0/account/encryption',
-        options: options,
-        cancelToken: cancelToken,
-        onSendProgress: onSendProgress,
-        onReceiveProgress: onReceiveProgress,
-      ).then((response) => Http.transformResponse(
-          response, (model) => EncryptionResp.fromJson(model)));
+  }) {
+    return Http.post('/common/v1.0/account/login/test',
+            data: params,
+            options: options,
+            cancelToken: cancelToken,
+            onSendProgress: onSendProgress,
+            onReceiveProgress: onReceiveProgress)
+        .then((response) => Http.transformResponse(
+            response, (model) => AccountLoginResp.fromJson(model)));
+    ;
+  }
 
   ///
   /// 退出
@@ -67,24 +112,5 @@ class AccountApi {
         cancelToken: cancelToken,
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress);
-  }
-
-  ///
-  /// 获取当前登录用户
-  ///
-  /// @return { Future<Response<AccountLoginResp>> }
-  ///
-  static Future<Response<AccountLoginResp>> getCurrent({
-    Options? options,
-    CancelToken? cancelToken,
-    ProgressCallback? onSendProgress,
-    ProgressCallback? onReceiveProgress,
-  }) {
-    return Http.get('/common/v1.0/account/current',
-            options: options,
-            onSendProgress: onSendProgress,
-            onReceiveProgress: onReceiveProgress)
-        .then((response) => Http.transformResponse(
-            response, (model) => AccountLoginResp.fromJson(model)));
   }
 }
