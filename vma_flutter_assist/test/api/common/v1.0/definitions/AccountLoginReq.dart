@@ -37,8 +37,8 @@ class AccountLoginReq extends Model {
   }
 
   @override
-  fromJson(Map<String, dynamic> map) => fromJson(map);
+  fromJson(Map<String, dynamic> map) => AccountLoginReq.fromJson(map);
 
   @override
-  fromJsonString(String jsonStr) => fromJsonString(jsonStr);
+  fromJsonString(String jsonStr) => AccountLoginReq.fromJsonString(jsonStr);
 }

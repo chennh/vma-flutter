@@ -46,7 +46,7 @@ class HttpWrap {
     if (response.data == null) {
       return response;
     }
-    return dataResponse<T>(response, fromResponseData(response.data, fromJson));
+    return dataResponse<dynamic>(response, fromResponseData(response.data, fromJson));
   }
 
   /// response.data转为bean对象
