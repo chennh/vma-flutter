@@ -221,7 +221,7 @@ class _StringWrap {
 
   static String translateUri(String uri) {
     if (!_StringWrap.isBlank(uri)) {
-      List<String> uris = uri.split("\\?");
+      List<String> uris = uri.split("?");
       if (uris.length > 1) {
         StringBuffer sb = StringBuffer();
         sb.write(uris[0] + "?");
